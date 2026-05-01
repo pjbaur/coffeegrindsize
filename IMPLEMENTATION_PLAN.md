@@ -301,6 +301,10 @@ Run `ruff check coffeegrindsize.py`, fix non-behavioral issues only (unused impo
 
 **Depends on:** Phase 1 (tests), Phase 2 (clean code). Extract one module at a time, test after each.
 
+**Status:** ✅ Completed on 2026-05-01.
+
+Implemented package layout, extracted config/models/analysis/io/utils modules, moved the GUI into `coffeegrindsize/ui/app.py`, and kept `coffeegrindsize.py` as a compatibility shim. Verification: `uv run --extra dev ruff check coffeegrindsize coffeegrindsize.py` and `uv run --extra dev pytest` both pass.
+
 ### Target package layout
 ```
 coffeegrindsize/

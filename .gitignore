@@ -9,6 +9,7 @@ Thumbs.db
 .claude/settings.local.json
 .trees/
 App/venv/
+App/dist/.DS_Store
 App/dist/
 App/build/
 *.egg-info/
@@ -19,4 +20,3 @@ build/
 htmlcov/
 .coverage
 .sfdx/
-

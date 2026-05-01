@@ -112,3 +112,123 @@ Finished Phase 2 items that were still incomplete after the prior log entry.
 
 ### Next Steps
 - Phase 3: Module restructuring.
+
+---
+
+[2026-05-01 04:32] - Phase 3: Session Start
+
+### Context
+Starting Phase 3 from `IMPLEMENTATION_PLAN.md` — module restructuring.
+
+### Actions Taken
+- Read the last work-log entries in `.claude/work-log.md`.
+- Confirmed Phase 2 is complete and verified.
+- Reviewed Phase 3 extraction order in `IMPLEMENTATION_PLAN.md`.
+
+### Decisions
+- Preserve compatibility for `import coffeegrindsize` and existing GUI method tests while introducing the package layout.
+- Move incrementally: package skeleton first, then extracted pure modules, then GUI delegation.
+
+### Issues / Blockers
+- None yet.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Create `coffeegrindsize/` package layout.
+- Move GUI implementation into `coffeegrindsize/ui/app.py`.
+- Keep `coffeegrindsize.py` as a thin shim.
+
+### Plan Tracking
+- Working on Phase 3 extraction steps 1–10 in `IMPLEMENTATION_PLAN.md`.
+
+---
+
+[2026-05-01 04:34] - Phase 3: Package Extraction In Progress
+
+### Context
+Implementing Phase 3 module restructuring from `IMPLEMENTATION_PLAN.md`.
+
+### Actions Taken
+- Created package skeleton under `coffeegrindsize/`.
+- Copied GUI implementation to `coffeegrindsize/ui/app.py`.
+- Added extracted modules:
+  - `coffeegrindsize/config.py`
+  - `coffeegrindsize/models.py`
+  - `coffeegrindsize/analysis/simulation.py`
+  - `coffeegrindsize/analysis/geometry.py`
+  - `coffeegrindsize/analysis/clustering.py`
+  - `coffeegrindsize/analysis/statistics.py`
+  - `coffeegrindsize/analysis/threshold.py`
+  - `coffeegrindsize/io/csv_io.py`
+  - `coffeegrindsize/utils.py`
+- Replaced root `coffeegrindsize.py` with a compatibility shim.
+- Updated `pyproject.toml` to package discovery.
+- Patched GUI methods to delegate to extracted modules.
+
+### Decisions
+- Kept GUI method names as delegates so existing tests and external callers remain compatible.
+- Kept top-level package exports for legacy imports from `coffeegrindsize`.
+
+### Issues / Blockers
+- Initial test run: 41 passed, 2 failed because tests patch `coffeegrindsize.filedialog`; package did not expose that legacy alias.
+- Added `filedialog` export from `coffeegrindsize/__init__.py`.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Re-run tests.
+- Run ruff and fix module import/style regressions.
+- Mark Phase 3 complete in `IMPLEMENTATION_PLAN.md` after verification.
+
+### Plan Tracking
+- Phase 3 steps 1–10 are implemented structurally; verification still pending.
+
+---
+
+[2026-05-01 04:38] - Phase 3: Module Restructuring Complete
+
+### Context
+Completed Phase 3 from `IMPLEMENTATION_PLAN.md` — module restructuring.
+
+### Actions Taken
+- Moved GUI implementation into `coffeegrindsize/ui/app.py`.
+- Replaced root `coffeegrindsize.py` with a thin compatibility shim.
+- Added package entry point `coffeegrindsize/__main__.py`.
+- Extracted:
+  - `coffeegrindsize/config.py`
+  - `coffeegrindsize/models.py`
+  - `coffeegrindsize/analysis/simulation.py`
+  - `coffeegrindsize/analysis/geometry.py`
+  - `coffeegrindsize/analysis/clustering.py`
+  - `coffeegrindsize/analysis/statistics.py`
+  - `coffeegrindsize/analysis/threshold.py`
+  - `coffeegrindsize/io/csv_io.py`
+  - `coffeegrindsize/utils.py`
+- Updated `coffeegrindsize/ui/app.py` to delegate extracted GUI methods to package functions.
+- Updated `pyproject.toml` from `py-modules` to package discovery.
+- Restored top-level `coffeegrindsize.filedialog` compatibility for existing mocks.
+- Marked Phase 3 complete in `IMPLEMENTATION_PLAN.md`.
+
+### Decisions
+- Kept legacy GUI method wrappers (`smooth`, `quick_cluster`, `threshold_image`, etc.) to preserve external API compatibility.
+- Left UI class extraction for future work beyond Phase 3; the GUI is now in `ui/app.py` and delegates to extracted modules.
+- Did not modify tests; all failures were addressed in compatibility/package code.
+
+### Issues / Blockers
+- First test run after restructuring had 2 failures due to missing `coffeegrindsize.filedialog` top-level alias.
+- Fixed by exporting `filedialog` from `coffeegrindsize/__init__.py`.
+- Worktree has unrelated existing changes/noise: `App/dist/.DS_Store`, untracked `AGENTS.md`, untracked `uv.lock`; left untouched.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Phase 4: Python 3.10+ modernization and type hints for extracted analysis modules.
+
+### Plan Tracking
+- Phase 3 steps 1–10 in `IMPLEMENTATION_PLAN.md` are complete.
+- `uv run --extra dev ruff check coffeegrindsize coffeegrindsize.py` → passed.
+- `uv run --extra dev pytest` → 43 passed.

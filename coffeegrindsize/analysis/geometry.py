@@ -1,14 +1,22 @@
 """Geometry helpers."""
 
+from typing import Any
+
 import numpy as np
+import numpy.typing as npt
 
 
-def smooth(x, window_size):
+def smooth(x: npt.ArrayLike, window_size: int) -> npt.NDArray[Any]:
     window = np.ones(int(window_size)) / float(window_size)
     return np.convolve(x, window, "same")
 
 
-def points_along_polygon(X_points, Y_points, X_polygon, Y_polygon):
+def points_along_polygon(
+    X_points: npt.NDArray[np.floating[Any]],
+    Y_points: npt.NDArray[np.floating[Any]],
+    X_polygon: npt.NDArray[np.floating[Any]],
+    Y_polygon: npt.NDArray[np.floating[Any]],
+) -> npt.NDArray[np.intp]:
     """Return indices of points within the pixel-width path of polygon edges."""
     nlines = X_polygon.size - 1
     x0 = X_points

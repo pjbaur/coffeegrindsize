@@ -27,7 +27,7 @@ def threshold_image_data(img_source, threshold, polygon_alpha=None, polygon_beta
         pts = np.vstack((image_y.flatten(), image_x.flatten())).T
         contained = poly.contains_points(pts)
 
-        if np.max(contained) is False:
+        if not np.any(contained):
             return {
                 "error": "No Image Pixels were Located Inside of the Analysis Region",
                 "imdata": imdata,
@@ -48,7 +48,7 @@ def threshold_image_data(img_source, threshold, polygon_alpha=None, polygon_beta
         pts = np.vstack((mask_threshold[1], mask_threshold[0])).T
         contained = poly.contains_points(pts)
 
-        if np.max(contained) is False:
+        if not np.any(contained):
             return {
                 "error": "No Thresholded Pixels were Located Inside of the Analysis Region",
                 "imdata": imdata,

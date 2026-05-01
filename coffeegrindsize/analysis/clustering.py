@@ -1,9 +1,17 @@
 """Cluster detection helpers."""
 
+from __future__ import annotations
+
+from typing import Any
+
 import numpy as np
+from numpy.typing import NDArray
+
+IntArray = NDArray[np.integer[Any]]
+IntLike = int | np.integer[Any]
 
 
-def quick_cluster(xlist, ylist, xstart, ystart):
+def quick_cluster(xlist: IntArray, ylist: IntArray, xstart: IntLike, ystart: IntLike) -> IntArray:
     """Flood-fill thresholded pixels using the legacy Manhattan-distance rule."""
     xcheck = np.array([xstart])
     ycheck = np.array([ystart])

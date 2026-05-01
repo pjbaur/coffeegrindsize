@@ -888,7 +888,7 @@ class coffeegrindsize_GUI:
         try:
             pixel_scale = float(self.pixel_length_var.get())/float(self.physical_length_var.get())
             #Make it a string
-            pixel_scale_str = "{0:.{1}f}".format(pixel_scale, 3)
+            pixel_scale_str = f"{pixel_scale:.3f}"
         except (ValueError, TypeError):
             pixel_scale = None
             pixel_scale_str = "None"
@@ -1431,12 +1431,12 @@ class coffeegrindsize_GUI:
 
         #Update length of line in pixels
         line_length = np.sqrt((cur_x - self.linex_start)**2 + (cur_y - self.liney_start)**2)/self.scale
-        line_length_str = "{0:.{1}f}".format(line_length, 1)
+        line_length_str = f"{line_length:.1f}"
         self.pixel_length_var.set(line_length_str)
 
         #Update angle of line in degrees
         line_angle = 180.0/np.pi*np.arctan2( (cur_y - self.liney_start), (cur_x - self.linex_start) )
-        line_angle_str = "{0:.{1}f}".format(line_angle, 1)
+        line_angle_str = f"{line_angle:.1f}"
         self.physical_angle_var.set(line_angle_str)
 
         #Update pixel scale
@@ -1736,7 +1736,7 @@ class coffeegrindsize_GUI:
         self.original_scale *= 2
 
         #Resize image
-        self.img_source = self.img_source.resize((int(float(self.img.size[0])/2),int(float(self.img.size[1])/2)), Image.ANTIALIAS)
+        self.img_source = self.img_source.resize((int(float(self.img.size[0])/2),int(float(self.img.size[1])/2)), Image.Resampling.LANCZOS)
         self.img = self.img_source
 
         #Redraw the image
@@ -1879,7 +1879,7 @@ class coffeegrindsize_GUI:
 
         #Determine fraction of thresholded pixels
         thresholded_fraction = self.mask_threshold[0].size/self.imdata.size*100
-        thresholded_fraction_str = "{0:.{1}f}".format(thresholded_fraction, 1)
+        thresholded_fraction_str = f"{thresholded_fraction:.1f}"
 
         #Refresh the user interface status
         self.status_var.set("Image thresholded: "+thresholded_fraction_str+"% of all pixels were thresholded")
@@ -1956,7 +1956,7 @@ class coffeegrindsize_GUI:
             if i%10 == 0:
                 frac_counted = np.sum(counted)/float(nmask)*100
                 frac_counted = np.minimum(frac_counted,99.9)
-                frac_counted_str = "{0:.{1}f}".format(frac_counted, 1)
+                frac_counted_str = f"{frac_counted:.1f}"
                 self.status_var.set("Iteration #"+str(i)+"; Fraction of thresholded pixels that were analyzed: "+frac_counted_str+" %")
                 self.master.update()
 
@@ -2538,14 +2538,14 @@ class coffeegrindsize_GUI:
             pixel_scale,
         )
 
-        diameters_average_str = "{0:.{1}f}".format(stats.diameters_average, 2)
-        diameters_stddev_str = "{0:.{1}f}".format(stats.diameters_stddev, 2)
+        diameters_average_str = f"{stats.diameters_average:.2f}"
+        diameters_stddev_str = f"{stats.diameters_stddev:.2f}"
 
-        surfaces_average_str = "{0:.{1}f}".format(stats.surfaces_average, 2)
-        surfaces_stddev_str = "{0:.{1}f}".format(stats.surfaces_stddev, 2)
+        surfaces_average_str = f"{stats.surfaces_average:.2f}"
+        surfaces_stddev_str = f"{stats.surfaces_stddev:.2f}"
 
-        effs_average_str = "{0:.{1}f}".format(stats.effs_average, 1)
-        q_str = "{0:.{1}f}".format(stats.quality, 2)
+        effs_average_str = f"{stats.effs_average:.1f}"
+        q_str = f"{stats.quality:.2f}"
 
         self.diam_average_var.set(diameters_average_str)
         self.diam_stddev_var.set(diameters_stddev_str)
@@ -2702,7 +2702,7 @@ class coffeegrindsize_GUI:
         fig.canvas.draw()
 
         #Tranform the figure in a numpy array
-        figdata = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        figdata = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
         figdata = figdata.reshape(fig.canvas.get_width_height()[::-1] + (3,))
 
         #Read the shape of the numpy array

@@ -1,9 +1,12 @@
 """Particle extraction simulations."""
 
+from typing import Any
+
 import numpy as np
+from numpy.typing import NDArray
 
 
-def attainable_mass_simulate(volumes):
+def attainable_mass_simulate(volumes: NDArray[np.number[Any]]) -> NDArray[np.floating[Any]]:
     """Estimate reachable volume after accounting for an inaccessible core."""
     depth_limit = 0.1  # mm
 
@@ -15,7 +18,7 @@ def attainable_mass_simulate(volumes):
     return volumes - unreachable_volumes
 
 
-def ey_simulate(surfaces):
+def ey_simulate(surfaces: NDArray[np.number[Any]]) -> NDArray[np.floating[Any]]:
     """Estimate extraction yield from particle surfaces."""
     k_reference = 0.25014
     extraction_limit = 0.3

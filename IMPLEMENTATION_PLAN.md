@@ -258,6 +258,8 @@ pytest --cov=coffeegrindsize  # Coverage reported for all tested functions
 
 ## Phase 2: Code Cleanup (1–2 days)
 
+**Status:** Complete as of 2026-05-01.
+
 **Depends on:** Phase 1 complete. Run full test suite after each change.
 
 ### 2.1 Remove debug code

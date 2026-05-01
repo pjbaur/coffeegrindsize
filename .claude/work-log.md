@@ -87,3 +87,28 @@ Implementing Phase 2 from IMPLEMENTATION_PLAN.md — code cleanup without behavi
 
 ### Next Steps
 - Phase 3: Module restructuring (extract analysis, io, ui modules)
+
+---
+
+[2026-05-01 04:28] - Phase 2: Completion Correction
+
+### Context
+Finished Phase 2 items that were still incomplete after the prior log entry.
+
+### Actions Taken
+- Removed remaining debug `print(self.display_advanced_options)` from `coffeegrindsize.py`.
+- Converted legacy tab indentation in `coffeegrindsize.py` to spaces and ran `ruff --fix`.
+- Fixed remaining ruff issues: unused locals, ambiguous loop index, and NumPy boolean comparison.
+- Added `.pre-commit-config.yaml` with ruff hook.
+- Marked Phase 2 complete in `IMPLEMENTATION_PLAN.md`.
+
+### Verification
+- `uv run --extra dev ruff check coffeegrindsize.py` → passed.
+- `uv run --extra dev pytest` → 43 passed.
+- Grep for debug/bare except/wildcard tkinter patterns → no matches.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Phase 3: Module restructuring.

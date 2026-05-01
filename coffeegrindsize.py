@@ -1,6 +1,9 @@
 #Import the required packages
 from tkinter import filedialog
-from tkinter import *
+from tkinter import (BOTTOM, Button, Canvas, CENTER, Checkbutton, DISABLED, E,
+                     Entry, EW, Frame, IntVar, LEFT, Label, Menu, N, NORMAL,
+                     OptionMenu, RIGHT, SUNKEN, StringVar, TOP, Tk,
+                     W, X, Y)
 from PIL import ImageTk, Image
 import time
 import numpy as np
@@ -12,7 +15,6 @@ import sys
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import matplotlib.ticker as mticker
 from matplotlib import path
 
@@ -20,10 +22,6 @@ from matplotlib import path
 from matplotlib import rc
 rc("axes", linewidth=2)
 
-
-#Temporary for debugging purposes
-import pdb
-stop = pdb.set_trace
 
 # === Default Parameters for analysis and plotting ===
 
@@ -661,11 +659,7 @@ class coffeegrindsize_GUI:
 		#Expert mode with all options
 		subMenu.add_command(label="Turn Expert Mode On/Off...", command=self.toggle_expert_mode)
 		subMenu.add_separator()
-		
-		#Add an option for debugging
-		subMenu.add_command(label="Python Debugger...", command=self.pdb_call)
-		subMenu.add_separator()
-		
+
 		#Add an option to quit
 		subMenu.add_command(label="Quit", command=self.quit_gui)
 		
@@ -906,13 +900,13 @@ class coffeegrindsize_GUI:
 	
 	#Method to update the pixel scale
 	def update_pixel_scale(self):
-		
+
 		#Calculate pixel scale. If an error arises then something was not a number
 		try:
 			pixel_scale = float(self.pixel_length_var.get())/float(self.physical_length_var.get())
 			#Make it a string
 			pixel_scale_str = "{0:.{1}f}".format(pixel_scale, 3)
-		except:
+		except (ValueError, TypeError):
 			pixel_scale = None
 			pixel_scale_str = "None"
 		
@@ -1664,11 +1658,7 @@ class coffeegrindsize_GUI:
 			self.simple_frame_options.tkraise()
 			self.expert_mode = False
 			return
-	
-	#Method to trigger the Python debugger
-	def pdb_call(self):
-		pdb.set_trace()
-	
+
 	#Method to reset zoom
 	def reset_zoom(self):
 		
@@ -1877,7 +1867,7 @@ class coffeegrindsize_GUI:
 		#Read internal data
 		try:
 			threshold = float(self.threshold_var.get())
-		except:
+		except (ValueError, TypeError):
 			
 			#Update the user interface status
 			self.status_var.set("Some Options in the User Interface are Invalid Numbers...")
@@ -2065,7 +2055,7 @@ class coffeegrindsize_GUI:
 			min_roundness_var = float(self.min_roundness_var.get())
 			reference_threshold = float(self.reference_threshold_var.get())
 			maxcost = float(self.maxcost_var.get())
-		except:
+		except (ValueError, TypeError):
 			
 			#Update the user interface status
 			self.status_var.set("Some Options in the User Interface are Invalid Numbers...")
@@ -2500,7 +2490,7 @@ class coffeegrindsize_GUI:
 		#Read internal data
 		try:
 			pixel_scale = float(source.pixel_scale_var.get())
-		except:
+		except (ValueError, TypeError):
 			#Update the user interface status
 			self.status_var.set("Some Options in the User Interface are Invalid Numbers...")
 			
@@ -2594,7 +2584,7 @@ class coffeegrindsize_GUI:
 			try:
 				xmin = float(self.xmin_var.get())
 				xmax = float(self.xmax_var.get())
-			except:
+			except (ValueError, TypeError):
 				#Update the user interface status
 				self.status_var.set("Some Options in the User Interface are Invalid Numbers...")
 				
@@ -2618,7 +2608,7 @@ class coffeegrindsize_GUI:
 			else:
 				try:
 					nbins = int(np.round(float(self.nbins_var.get())))
-				except:
+				except (ValueError, TypeError):
 					#Update the user interface status
 					self.status_var.set("Some Options in the User Interface are Invalid Numbers...")
 					
@@ -2739,7 +2729,7 @@ class coffeegrindsize_GUI:
 			bias_estimator = 1.0
 		
 		#Normalize weights
-		weights /= np.nansum(weights)
+		weights = weights / np.nansum(weights)
 		
 		#Calculate weighted average
 		wmean = np.nansum(data*weights)
@@ -2766,7 +2756,7 @@ class coffeegrindsize_GUI:
 		#Read internal data
 		try:
 			pixel_scale = float(self.pixel_scale_var.get())
-		except:
+		except (ValueError, TypeError):
 			return
 		
 		diameters = 2*np.sqrt(self.clusters_long_axis*self.clusters_short_axis)/pixel_scale
@@ -3097,7 +3087,7 @@ class coffeegrindsize_GUI:
 		#Read internal data
 		try:
 			pixel_scale = float(self.pixel_scale_var.get())
-		except:
+		except (ValueError, TypeError):
 			#Update the user interface status
 			self.status_var.set("Some Options in the User Interface are Invalid Numbers...")
 			
@@ -3213,12 +3203,4 @@ if __name__ == "__main__":
 	#Call the user interface
 	coffeegrindsize_GUI(root)
 
-	#Refresh user interface in a try statement to avoid UTF-8 crashes when the user interface tries to interpret unrecognized inputs like an Apple trackpad
-	while True:
-		try:
-			root.mainloop()
-			break
-		except UnicodeDecodeError:
-			pass
-		#except:
-		#	pdb.set_trace()
+	root.mainloop()

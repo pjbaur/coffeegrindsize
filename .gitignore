@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 *.pyo
-.DS_Store
+**/.DS_Store
 Thumbs.db
 .env
 .env.local
@@ -18,3 +18,5 @@ build/
 .ruff_cache/
 htmlcov/
 .coverage
+.sfdx/
+

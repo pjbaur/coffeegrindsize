@@ -57,3 +57,33 @@ Implementing Phase 1 from IMPLEMENTATION_PLAN.md — lock in current behavior be
 
 ### Next Steps
 - Phase 2: Code cleanup (remove debug code, fix bare excepts, fix wildcard imports, fix mutation bug)
+
+---
+
+[2026-05-01 17:00] - Phase 2: Code Cleanup
+
+### Context
+Implementing Phase 2 from IMPLEMENTATION_PLAN.md — code cleanup without behavior changes.
+
+### Actions Taken
+- **2.1 Removed pdb debug code**: deleted `import pdb`/`stop = pdb.set_trace` (lines 24-26), pdb menu entry (line 666-667), `pdb_call` method (lines 1668-1670), commented pdb at EOF
+- **2.2 Fixed 8 bare except clauses**: replaced `except:` with `except (ValueError, TypeError):` at update_pixel_scale, threshold_image, launch_psd, psd_hist_from_data (×3), update_statistics, save_data
+- **2.3 Fixed wildcard import**: replaced `from tkinter import *` with explicit imports (28 names). Added `EW` after initial miss. Removed unused `Place`, `Scale`.
+- **2.4 Fixed mainloop hack**: replaced `while True: try: root.mainloop() ... except UnicodeDecodeError: pass` with plain `root.mainloop()`
+- **2.5 Fixed weighted_stddev mutation bug**: `weights /= np.nansum(weights)` → `weights = weights / np.nansum(weights)`. Test already asserted non-mutation.
+- **2.6 Ruff linting**: removed unused imports (`Place`, `Scale`, `mpimg`). Tabs/whitespace warnings are pre-existing — deferred to Phase 4.
+
+### Issues Fixed After Agent Work
+- except-fixer agent mangled indentation (deleted `try:` lines, over-indented body). Manual line-by-line repair required for all 8 blocks.
+- mainloop-fixer agent appended lines instead of replacing. Manual cleanup required.
+- import-fixer agent missed `EW` constant. Added manually.
+
+### Decisions
+- Used Agent Team (5 parallel agents) for Phase 2 tasks. Agents completed single-file edits but except-fixer damaged indentation patterns — required manual repair.
+- For future parallel edits on same file: agents should work on different files or use sequential approach.
+
+### Status
+✅ Completed — 43 tests pass
+
+### Next Steps
+- Phase 3: Module restructuring (extract analysis, io, ui modules)

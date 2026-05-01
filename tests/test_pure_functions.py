@@ -53,7 +53,7 @@ class TestWeightedStddev:
         weights = np.array([2.0, 3.0])
         weights_copy = weights.copy()
         gui.weighted_stddev(data, weights, frequency=True, unbiased=True)
-        assert not np.array_equal(weights, weights_copy)
+        assert np.array_equal(weights, weights_copy)
 
 
 class TestAttainableMassSimulate:

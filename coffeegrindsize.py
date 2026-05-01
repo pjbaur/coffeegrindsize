@@ -3205,19 +3205,20 @@ class coffeegrindsize_GUI:
 
 # === Main loop and call to the user interface window ===
 
-#Invoke tkinter package
-root = Tk()
-root.protocol('WM_DELETE_WINDOW', root.quit)
+if __name__ == "__main__":
+	#Invoke tkinter package
+	root = Tk()
+	root.protocol('WM_DELETE_WINDOW', root.quit)
 
-#Call the user interface
-coffeegrindsize_GUI(root)
+	#Call the user interface
+	coffeegrindsize_GUI(root)
 
-#Refresh user interface in a try statement to avoid UTF-8 crashes when the user interface tries to interpret unrecognized inputs like an Apple trackpad
-while True:
-	try:
-		root.mainloop()
-		break
-	except UnicodeDecodeError:
-		pass
-	#except:
-	#	pdb.set_trace()
+	#Refresh user interface in a try statement to avoid UTF-8 crashes when the user interface tries to interpret unrecognized inputs like an Apple trackpad
+	while True:
+		try:
+			root.mainloop()
+			break
+		except UnicodeDecodeError:
+			pass
+		#except:
+		#	pdb.set_trace()

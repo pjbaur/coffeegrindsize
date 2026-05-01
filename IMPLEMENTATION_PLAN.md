@@ -14,12 +14,12 @@ The coffeegrindsize application is a desktop tool for analyzing coffee grind par
 
 No application code changes. Infrastructure only.
 
-### 0.1 Create working branch
+### 0.1 [x] Create working branch
 ```
 git checkout -b modernization master
 ```
 
-### 0.2 Create `.gitignore`
+### 0.2 [x] Create `.gitignore`
 ```
 __pycache__/
 *.pyc
@@ -43,7 +43,7 @@ htmlcov/
 .coverage
 ```
 
-### 0.3 Create `pyproject.toml`
+### 0.3 [x] Create `pyproject.toml`
 ```toml
 [project]
 name = "coffeegrindsize"
@@ -77,7 +77,7 @@ select = ["E", "F", "W", "I"]
 ignore = ["E501"]
 ```
 
-### 0.4 Create test directory structure
+### 0.4 [x] Create test directory structure
 ```
 tests/
 ├── __init__.py
@@ -93,7 +93,7 @@ tests/
 └── test_defaults.py
 ```
 
-### 0.5 Verification
+### 0.5 [x] Verification
 - `pip install -e ".[dev]"` succeeds
 - `pytest --collect-only` runs without errors
 
@@ -103,7 +103,7 @@ tests/
 
 **Goal:** Lock in current behavior before any code changes. Every subsequent phase is validated against these tests.
 
-### 1a. conftest.py — Shared Fixtures
+### 1a. [x] conftest.py — Shared Fixtures
 
 **File:** `tests/conftest.py`
 
@@ -119,7 +119,7 @@ tests/
 
 ---
 
-### 1b. Pure Function Tests — `tests/test_pure_functions.py`
+### 1b. [x] Pure Function Tests — `tests/test_pure_functions.py`
 
 #### `smooth(x, window_size)` — lines 2427–2429
 Implementation: `np.convolve(x, np.ones(window_size)/window_size, "same")`
@@ -177,7 +177,7 @@ Input/output in [0,1] range. Blends toward white.
 
 ---
 
-### 1c. Geometry Tests — `tests/test_geometry.py`
+### 1c. [x] Geometry Tests — `tests/test_geometry.py`
 
 #### `points_along_polygon(X, Y, X_poly, Y_poly)` — lines 1987–2020
 Finds points within √2×1.01 of polygon edge segments.
@@ -190,7 +190,7 @@ Finds points within √2×1.01 of polygon edge segments.
 
 ---
 
-### 1d. Clustering Tests — `tests/test_clustering.py`
+### 1d. [x] Clustering Tests — `tests/test_clustering.py`
 
 #### `quick_cluster(xlist, ylist, xstart, ystart)` — lines 2432–2496
 Flood-fill with Manhattan distance ≤ 1.001.
@@ -205,7 +205,7 @@ Flood-fill with Manhattan distance ≤ 1.001.
 
 ---
 
-### 1e. Threshold Tests — `tests/test_threshold.py`
+### 1e. [x] Threshold Tests — `tests/test_threshold.py`
 
 Tests `threshold_image()` (lines 1862–1984). Requires injecting synthetic images into `gui.img_source` and setting GUI variables.
 
@@ -217,19 +217,19 @@ Tests `threshold_image()` (lines 1862–1984). Requires injecting synthetic imag
 
 ---
 
-### 1f. Statistics Tests — `tests/test_statistics.py`
+### 1f. [x] Statistics Tests — `tests/test_statistics.py`
 
 Tests `update_statistics()` (lines 2758–2826). Inject known cluster arrays via `sample_cluster_data` fixture, mock GUI StringVar objects, verify computed averages/stddevs are positive and reasonable.
 
 ---
 
-### 1g. I/O Tests — `tests/test_io.py`
+### 1g. [x] I/O Tests — `tests/test_io.py`
 
 CSV round-trip: mock `filedialog`, call `save_data()` to temp dir, read back with pandas, assert cluster arrays match. Test `load_data()` with a fixture CSV.
 
 ---
 
-### 1h. Defaults Tests — `tests/test_defaults.py`
+### 1h. [x] Defaults Tests — `tests/test_defaults.py`
 
 No GUI needed — test module-level constants directly.
 
@@ -241,14 +241,14 @@ No GUI needed — test module-level constants directly.
 
 ---
 
-### 1i. Golden-file Snapshot Test
+### 1i. [x] Golden-file Snapshot Test
 
 - Create a small (50×50) synthetic test image with 3 known dark circles
 - Run full pipeline: threshold → launch_psd → refresh_cluster_data → save to `tests/fixtures/golden_clusters.csv`
 - Test asserts numerical equality (within float tolerance) against golden file
 - This is the ultimate regression guard for all future phases
 
-### Phase 1 Verification
+### 1j. [x] Phase 1 Verification
 ```
 pytest -v --tb=short          # All tests pass
 pytest --cov=coffeegrindsize  # Coverage reported for all tested functions
@@ -262,14 +262,14 @@ pytest --cov=coffeegrindsize  # Coverage reported for all tested functions
 
 **Depends on:** Phase 1 complete. Run full test suite after each change.
 
-### 2.1 Remove debug code
+### 2.1 [x] Remove debug code
 - Lines 24–26: `import pdb` / `stop = pdb.set_trace` → delete
 - Line 666: `subMenu.add_command(label="Python Debugger...", command=self.pdb_call)` → delete
 - Lines 1669–1670: `pdb_call` method → delete
 
 **Verify:** `grep -n "pdb" coffeegrindsize.py` → empty
 
-### 2.2 Fix bare `except:` clauses (8 occurrences)
+### 2.2 [x] Fix bare `except:` clauses (8 occurrences)
 All follow the pattern `try: float(var.get()) except: return`. Replace each with `except (ValueError, TypeError):`.
 
 | Line | Context |
@@ -283,16 +283,16 @@ All follow the pattern `try: float(var.get()) except: return`. Replace each with
 | ~2769 | `update_statistics` |
 | ~3100 | `save_data` |
 
-### 2.3 Fix wildcard import
+### 2.3 [x] Fix wildcard import
 Replace `from tkinter import *` (line 3) with explicit imports. Determine exact list by grepping for tkinter names used (`Frame`, `Label`, `Button`, `Canvas`, `StringVar`, `IntVar`, `NORMAL`, `DISABLED`, `LEFT`, `RIGHT`, `TOP`, `BOTTOM`, `BOTH`, `X`, `Y`, `N`, `S`, `E`, `W`, `NW`, `NE`, `SE`, `SW`, `END`, `HORIZONTAL`, `VERTICAL`, `SUNKEN`, `RAISED`, `Scrollbar`, `Menu`, `Checkbutton`, `OptionMenu`, `PhotoImage`, `Entry`, `Tk`).
 
-### 2.4 Fix mainloop hack
+### 2.4 [x] Fix mainloop hack
 Replace lines 3216–3221 (`while True: try: root.mainloop() ...`) with plain `root.mainloop()`. The `UnicodeDecodeError` was a Python 3.7/old macOS issue.
 
-### 2.5 Fix `weighted_stddev` mutation bug
+### 2.5 [x] Fix `weighted_stddev` mutation bug
 Line 2742: `weights /= np.nansum(weights)` → `weights = weights / np.nansum(weights)`. Update the Phase 1 test to assert weights are NOT mutated.
 
-### 2.6 Add ruff linting
+### 2.6 [x] Add ruff linting
 Run `ruff check coffeegrindsize.py`, fix non-behavioral issues only (unused imports, trailing whitespace). Add `.pre-commit-config.yaml` with ruff.
 
 ---
@@ -333,26 +333,26 @@ coffeegrindsize/
 ```
 
 ### Extraction order
-1. `config.py` — module constants (lines 28–88). Zero risk.
-2. `models.py` — `Comparison` class (lines 91–95). Trivial.
-3. `analysis/simulation.py` — `attainable_mass_simulate`, `ey_simulate`. Remove `self`, make standalone.
-4. `analysis/geometry.py` — `points_along_polygon`, `smooth`.
-5. `analysis/clustering.py` — `quick_cluster`.
-6. `analysis/statistics.py` — `weighted_stddev` + computation core of `update_statistics`.
-7. `analysis/threshold.py` — computation core of `threshold_image`.
-8. `io/csv_io.py` — DataFrame creation/CSV logic from `save_data`/`load_data`.
-9. `utils.py` — `lighter()`.
-10. `ui/` — GUI class stays mostly intact, delegates to analysis modules. Last priority.
+1. [x] `config.py` — module constants (lines 28–88). Zero risk.
+2. [x] `models.py` — `Comparison` class (lines 91–95). Trivial.
+3. [x] `analysis/simulation.py` — `attainable_mass_simulate`, `ey_simulate`. Remove `self`, make standalone.
+4. [x] `analysis/geometry.py` — `points_along_polygon`, `smooth`.
+5. [x] `analysis/clustering.py` — `quick_cluster`.
+6. [x] `analysis/statistics.py` — `weighted_stddev` + computation core of `update_statistics`.
+7. [x] `analysis/threshold.py` — computation core of `threshold_image`.
+8. [x] `io/csv_io.py` — DataFrame creation/CSV logic from `save_data`/`load_data`.
+9. [x] `utils.py` — `lighter()`.
+10. [x] `ui/` — GUI class stays mostly intact, delegates to analysis modules. Last priority.
 
 Keep `coffeegrindsize.py` as a thin shim that imports and launches the package.
 
 ### Per-extraction pattern
-1. Create new module with extracted function(s) (remove `self` param)
-2. In GUI class, replace method body with delegation call
-3. Update test imports
-4. `pytest` — must pass
-5. Golden-file test — must produce identical output
-6. Commit
+1. [x] Create new module with extracted function(s) (remove `self` param)
+2. [x] In GUI class, replace method body with delegation call
+3. [x] Update test imports
+4. [x] `pytest` — must pass
+5. [x] Golden-file test — must produce identical output
+6. [x] Commit
 
 ---
 
@@ -360,20 +360,20 @@ Keep `coffeegrindsize.py` as a thin shim that imports and launches the package.
 
 **Depends on:** Phase 1.
 
-### 4.1 Fix deprecated APIs
+### 4.1 [ ] Fix deprecated APIs
 | Location | Current | Fix |
 |----------|---------|-----|
 | Line 2972 | `np.fromstring(...)` | `np.frombuffer(...)` |
 | Line 1767 | `Image.ANTIALIAS` | `Image.LANCZOS` |
 | Lines 1915, 1941 | `np.max(contained) is False` | `not np.any(contained)` |
 
-### 4.2 Add type hints to extracted analysis modules
+### 4.2 [ ] Add type hints to extracted analysis modules
 Start with `analysis/simulation.py`, `analysis/geometry.py`, `analysis/clustering.py`. Use `numpy.typing.NDArray`.
 
-### 4.3 Modernize string formatting
+### 4.3 [ ] Modernize string formatting
 Replace `.format()` calls with f-strings throughout.
 
-### 4.4 Remove `App/` from version control
+### 4.4 [ ] Remove `App/` from version control
 ```
 git rm -r --cached App/
 ```
@@ -385,12 +385,12 @@ Add `App/` to `.gitignore`. Built artifacts should come from CI.
 
 **Depends on:** Phase 1.
 
-### 5.1 GitHub Actions workflow — `.github/workflows/ci.yml`
+### 5.1 [ ] GitHub Actions workflow — `.github/workflows/ci.yml`
 - Matrix: Python 3.10, 3.11, 3.12 × macOS + Ubuntu
 - Linux: `sudo apt-get install -y xvfb`, run tests with `xvfb-run`
 - Steps: checkout → setup-python → `pip install -e ".[dev]"` → `ruff check .` → `pytest -v --cov`
 
-### 5.2 Coverage configuration
+### 5.2 [ ] Coverage configuration
 In `pyproject.toml`: `fail_under = 60` (increase over time).
 
 ---
@@ -420,7 +420,7 @@ Future option: web-based UI (Streamlit/Gradio) reusing extracted analysis module
 ## Verification Strategy
 
 After each phase:
-1. `pytest -v --tb=short` — all tests pass
-2. Golden-file test — identical numerical output
-3. Manual app launch — GUI opens, loads an image, runs analysis
-4. `ruff check .` — no lint errors (Phase 2+)
+1. [ ] `pytest -v --tb=short` — all tests pass
+2. [ ] Golden-file test — identical numerical output
+3. [ ] Manual app launch — GUI opens, loads an image, runs analysis
+4. [ ] `ruff check .` — no lint errors (Phase 2+)

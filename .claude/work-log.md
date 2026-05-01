@@ -232,3 +232,87 @@ Completed Phase 3 from `IMPLEMENTATION_PLAN.md` — module restructuring.
 - Phase 3 steps 1–10 in `IMPLEMENTATION_PLAN.md` are complete.
 - `uv run --extra dev ruff check coffeegrindsize coffeegrindsize.py` → passed.
 - `uv run --extra dev pytest` → 43 passed.
+
+---
+
+[2026-05-01 06:07] - Add Progress Checkboxes to Plan
+
+### Context
+Tracking-only update to `IMPLEMENTATION_PLAN.md` requested by the user.
+
+### Actions Taken
+- Read the last 3 entries in `.claude/work-log.md`.
+- Added checkbox markers to numbered phase items in `IMPLEMENTATION_PLAN.md`.
+- Marked Phase 0, Phase 1, Phase 2, and Phase 3 checklist items as complete based on existing plan status and recent work-log entries.
+- Left Phase 4 and Phase 5 checklist items unchecked.
+- Numbered Phase 1 verification as `1j` so it can be tracked consistently.
+
+### Decisions
+- Used existing completed status from `IMPLEMENTATION_PLAN.md` and `.claude/work-log.md`; did not infer new implementation progress.
+- Did not add checkboxes to non-numbered descriptive sections.
+
+### Issues / Blockers
+- None.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Continue with Phase 4 Python 3.10+ modernization when implementation work resumes.
+
+### Plan Tracking
+- Updated `IMPLEMENTATION_PLAN.md` tracking format only; no functional plan step was newly completed by this change.
+
+---
+
+[2026-05-01 06:08] - Complete Numbered Checklist Coverage
+
+### Context
+Follow-up verification for the `IMPLEMENTATION_PLAN.md` checkbox tracking update.
+
+### Actions Taken
+- Added checkbox markers to the numbered verification strategy list at the end of `IMPLEMENTATION_PLAN.md`.
+- Ran a PCRE2 `rg` check to confirm there are no remaining numbered headings or numbered list items without `[ ]` / `[x]` markers.
+
+### Decisions
+- Left the final verification strategy items unchecked because they are recurring per-phase checks, not a newly completed phase task.
+
+### Issues / Blockers
+- Initial `rg` check without PCRE2 failed because default ripgrep does not support look-ahead syntax; reran with `--pcre2` successfully.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Continue with Phase 4 Python 3.10+ modernization when implementation work resumes.
+
+### Plan Tracking
+- Updated `IMPLEMENTATION_PLAN.md` tracking format only; no implementation steps were newly completed.
+
+---
+
+[2026-05-01 06:10] - Track uv Lockfile
+
+### Context
+User requested tracking `uv.lock` in git and committing all current changes.
+
+### Actions Taken
+- Read recent `.claude/work-log.md` entries.
+- Confirmed current changes: `IMPLEMENTATION_PLAN.md`, `.claude/work-log.md`, and untracked `uv.lock`.
+
+### Decisions
+- Include all current changes in one commit because the user requested committing all changes.
+- No test run needed; changes are plan/log metadata and dependency lockfile tracking only.
+
+### Issues / Blockers
+- None.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Stage `uv.lock`, `IMPLEMENTATION_PLAN.md`, and `.claude/work-log.md`.
+- Commit all staged changes.
+
+### Plan Tracking
+- No implementation plan step changed by tracking `uv.lock`.

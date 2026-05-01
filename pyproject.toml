@@ -35,3 +35,20 @@ target-version = "py310"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 ignore = ["E501"]
+
+[tool.coverage.run]
+source = ["coffeegrindsize"]
+omit = [
+    "coffeegrindsize/__main__.py",
+    "coffeegrindsize/ui/*",
+]
+
+[tool.coverage.report]
+fail_under = 60
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]

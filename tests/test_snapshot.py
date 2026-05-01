@@ -5,7 +5,6 @@ import pandas as pd
 import pytest
 from numpy.testing import assert_allclose
 
-
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
 GOLDEN_CSV = os.path.join(FIXTURES_DIR, "golden_clusters.csv")
 

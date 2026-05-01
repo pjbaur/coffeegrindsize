@@ -1,7 +1,8 @@
-import pytest
-import numpy as np
-from PIL import Image
 from tkinter import Tk
+
+import numpy as np
+import pytest
+from PIL import Image
 
 
 @pytest.fixture(scope="session")

@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 from PIL import Image
 
 
@@ -33,6 +32,7 @@ class TestThresholdImage:
     def test_no_image_returns_early(self, gui):
         gui.img_source = None
         result = gui.threshold_image(None)
+        assert result is None
         assert gui.mask_threshold is None
 
     def test_invalid_threshold_returns_early(self, gui, synthetic_white_image):

@@ -1,4 +1,3 @@
-import pytest
 
 
 class TestModuleConstants:
@@ -18,14 +17,14 @@ class TestModuleConstants:
 
     def test_default_constants(self):
         from coffeegrindsize import (
-            def_threshold,
-            def_maxcost,
-            def_min_surface,
-            def_max_cluster_axis,
-            def_min_roundness,
             coffee_cell_size,
-            default_log_binsize,
+            def_max_cluster_axis,
+            def_maxcost,
+            def_min_roundness,
+            def_min_surface,
+            def_threshold,
             default_binsize,
+            default_log_binsize,
         )
 
         assert def_threshold == 58.8
@@ -39,10 +38,10 @@ class TestModuleConstants:
 
     def test_display_names(self):
         from coffeegrindsize import (
-            original_image_display_name,
-            threshold_image_display_name,
-            outlines_image_display_name,
             histogram_image_display_name,
+            original_image_display_name,
+            outlines_image_display_name,
+            threshold_image_display_name,
         )
 
         assert original_image_display_name == "Original"

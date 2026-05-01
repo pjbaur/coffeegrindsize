@@ -1,9 +1,7 @@
 import os
 import tempfile
 
-import numpy as np
 import pandas as pd
-import pytest
 from numpy.testing import assert_allclose
 
 
@@ -50,7 +48,7 @@ class TestSaveLoadRoundTrip:
         csv_file = tmp_path / "test_data.csv"
         csv_file.write_text(sample_csv_content)
 
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         gui.create_histogram = MagicMock()
 
@@ -76,7 +74,7 @@ class TestLoadComparisonData:
         csv_file = tmp_path / "comparison_data.csv"
         csv_file.write_text(sample_csv_content)
 
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         gui.comparison_data_label_id = MagicMock()
         gui.simple_comparison_data_label_id = MagicMock()

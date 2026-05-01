@@ -360,14 +360,14 @@ Keep `coffeegrindsize.py` as a thin shim that imports and launches the package.
 
 **Depends on:** Phase 1.
 
-### 4.1 [ ] Fix deprecated APIs
+### 4.1 [x] Fix deprecated APIs
 | Location | Current | Fix |
 |----------|---------|-----|
 | Line 2972 | `np.fromstring(...)` | `np.frombuffer(...)` |
 | Line 1767 | `Image.ANTIALIAS` | `Image.LANCZOS` |
 | Lines 1915, 1941 | `np.max(contained) is False` | `not np.any(contained)` |
 
-### 4.2 [ ] Add type hints to extracted analysis modules
+### 4.2 [x] Add type hints to extracted analysis modules
 Start with `analysis/simulation.py`, `analysis/geometry.py`, `analysis/clustering.py`. Use `numpy.typing.NDArray`.
 
 ### 4.3 [ ] Modernize string formatting
@@ -383,15 +383,18 @@ Add `App/` to `.gitignore`. Built artifacts should come from CI.
 
 ## Phase 5: CI/CD (2–3 days)
 
+**Status:** ✅ Completed on 2026-05-01.
+
 **Depends on:** Phase 1.
 
-### 5.1 [ ] GitHub Actions workflow — `.github/workflows/ci.yml`
-- Matrix: Python 3.10, 3.11, 3.12 × macOS + Ubuntu
-- Linux: `sudo apt-get install -y xvfb`, run tests with `xvfb-run`
-- Steps: checkout → setup-python → `pip install -e ".[dev]"` → `ruff check .` → `pytest -v --cov`
+### 5.1 [x] GitHub Actions workflow — `.github/workflows/ci.yml`
+- Matrix: Python 3.10, 3.11, 3.12 on Ubuntu (macOS deferred — tkinter on GH macOS runners is brittle; revisit once Ubuntu leg is stable)
+- Linux: `sudo apt-get install -y xvfb`, run tests with `xvfb-run -a`
+- Steps: checkout → install xvfb → setup-uv → `uv python install` → `uv sync --extra dev` → `uv run ruff check .` → `xvfb-run -a uv run pytest -v --cov`
+- **Note:** `uv sync` substituted for `pip install -e ".[dev]"` to match local dev (`uv.lock` is checked in). Concurrency group cancels superseded PR runs. Coverage XML uploaded as artifact from the 3.12 leg only.
 
-### 5.2 [ ] Coverage configuration
-In `pyproject.toml`: `fail_under = 60` (increase over time).
+### 5.2 [x] Coverage configuration
+In `pyproject.toml`: `fail_under = 60`. Coverage scope is restricted to `coffeegrindsize` excluding `coffeegrindsize/ui/*` and `coffeegrindsize/__main__.py` (GUI code requires a live tkinter session and is unsuitable for unit tests). Baseline cov on the included modules is 89.81%, leaving ~30-point headroom above the gate.
 
 ---
 

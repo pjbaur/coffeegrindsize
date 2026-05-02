@@ -8,6 +8,7 @@ Thumbs.db
 .env.*.local
 .claude/settings.local.json
 .trees/
+App/
 App/venv/
 App/dist/.DS_Store
 App/dist/

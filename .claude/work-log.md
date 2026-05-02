@@ -513,3 +513,106 @@ Implemented `IMPLEMENTATION_PLAN.md` Phase 5 (5.1 GitHub Actions workflow + 5.2 
 
 ### Plan Tracking
 - Marked `IMPLEMENTATION_PLAN.md` Phase 5.1 + 5.2 complete.
+
+---
+
+[2026-05-01 21:15] - Session Start Alignment
+
+### Context
+Resuming project work under repository session-start protocol.
+
+### Actions Taken
+- Read last work-log entries in `.claude/work-log.md`.
+- Checked `IMPLEMENTATION_PLAN.md` checklist status.
+- Checked git worktree status.
+
+### Decisions
+- Current plan alignment confirmed:
+  - Phase 5.1 and 5.2 are complete in `IMPLEMENTATION_PLAN.md`.
+  - Next planned items are Phase 4.3 string formatting modernization and Phase 4.4 `App/` removal from version control.
+- No implementation work started yet.
+
+### Issues / Blockers
+- None.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Start Phase 4.3 or Phase 4.4 when requested.
+- If pushing work, validate GitHub Actions after push.
+
+### Plan Tracking
+- Referenced `IMPLEMENTATION_PLAN.md` Phase 4.3, Phase 4.4, Phase 5.1, and Phase 5.2.
+
+---
+
+[2026-05-01 21:19] - Start Phase 4 Completion
+
+### Context
+Continuing `IMPLEMENTATION_PLAN.md` Phase 4 only, per request. Do not proceed to Phase 5.
+
+### Actions Taken
+- Checked git status: branch `main` is ahead of `origin/master` by 4 commits.
+- Reviewed Phase 4.3 and Phase 4.4 plan entries.
+- Counted tracked `App/` files: 7,475.
+- Searched `coffeegrindsize`, `coffeegrindsize.py`, and `tests` for `.format(` calls; none found.
+
+### Decisions
+- Use parallel subagents as requested:
+  - Worker A verifies and handles Phase 4.3 string formatting scope.
+  - Worker B handles Phase 4.4 `App/` untracking and `.gitignore`.
+- Main thread owns work-log, plan updates, verification, commit, and push.
+
+### Issues / Blockers
+- None.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Run Phase 4.3 and Phase 4.4 workers in parallel.
+- Review changes, run all tests, fix failures, then commit and push.
+
+### Plan Tracking
+- Working on `IMPLEMENTATION_PLAN.md` Phase 4.3 and Phase 4.4.
+
+---
+
+[2026-05-01 21:21] - Complete Phase 4.3 and 4.4
+
+### Context
+Completed remaining `IMPLEMENTATION_PLAN.md` Phase 4 items only, using parallel subagents as requested.
+
+### Actions Taken
+- Worker A verified Phase 4.3:
+  - Searched maintained repository scope excluding `App/`, `.git/`, plan, and logs.
+  - Found zero `.format(` calls, so no string-format code changes were needed.
+- Worker B implemented Phase 4.4:
+  - Ran `git rm -r --cached App/`.
+  - Added `App/` to `.gitignore`.
+  - Confirmed local `App/` directory remains present.
+- Marked Phase 4.3 and Phase 4.4 complete in `IMPLEMENTATION_PLAN.md`.
+- Ran verification:
+  - `uv run --extra dev pytest` -> 43 passed.
+  - `uv run --extra dev ruff check .` -> passed.
+
+### Decisions
+- Treated Phase 4.3 as already complete after repository-wide verification found no remaining `.format(` calls in maintained files.
+- Removed `App/` from version control using cached removal so local generated artifacts are preserved.
+- Did not modify tests.
+
+### Issues / Blockers
+- Worker B initially hit a sandbox index lock permission issue on `git rm -r --cached App/`; rerun succeeded.
+- Existing local history already contains a Phase 5 commit. No new Phase 5 work was performed.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Commit Phase 4.3/4.4 completion.
+- Push branch.
+- Stop after push per request.
+
+### Plan Tracking
+- Marked `IMPLEMENTATION_PLAN.md` Phase 4.3 and Phase 4.4 complete.

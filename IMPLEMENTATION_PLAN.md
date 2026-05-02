@@ -370,10 +370,10 @@ Keep `coffeegrindsize.py` as a thin shim that imports and launches the package.
 ### 4.2 [x] Add type hints to extracted analysis modules
 Start with `analysis/simulation.py`, `analysis/geometry.py`, `analysis/clustering.py`. Use `numpy.typing.NDArray`.
 
-### 4.3 [ ] Modernize string formatting
+### 4.3 [x] Modernize string formatting
 Replace `.format()` calls with f-strings throughout.
 
-### 4.4 [ ] Remove `App/` from version control
+### 4.4 [x] Remove `App/` from version control
 ```
 git rm -r --cached App/
 ```

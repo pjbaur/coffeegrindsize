@@ -649,3 +649,137 @@ Committed and pushed completed Phase 4 work after all tests passed.
 
 ### Plan Tracking
 - `IMPLEMENTATION_PLAN.md` Phase 4.3 and Phase 4.4 remain complete.
+
+---
+
+[2026-05-01 21:34] - Start Phase 5 Implementation
+
+### Context
+Implement `IMPLEMENTATION_PLAN.md` Phase 5 only, per request. Use parallel subagents, run all tests, fix failures, commit and push when green, then stop before Phase 6.
+
+### Actions Taken
+- Read the last work-log entries in `.claude/work-log.md`.
+- Checked `IMPLEMENTATION_PLAN.md` Phase 5 status.
+- Checked git status and recent history.
+- Found Phase 5 checklist items marked complete, but `.github/workflows/ci.yml` is absent from the current tree.
+
+### Decisions
+- Treat Phase 5 as incomplete in the current working tree and re-implement/verify it.
+- Use parallel subagents for independent Phase 5 workflow/config/test-gate review.
+
+### Issues / Blockers
+- Phase 5 plan state and repository tree are inconsistent; must reconcile before committing.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Spawn parallel subagents for CI workflow and coverage/test gate work.
+- Implement missing Phase 5 artifacts.
+- Run all tests and lint, fix failures, commit and push.
+
+### Plan Tracking
+- Working on `IMPLEMENTATION_PLAN.md` Phase 5.1 and Phase 5.2.
+
+---
+
+[2026-05-01 21:35] - Worker B Phase 5 Coverage Gate Review
+
+### Context
+Worker B scope for `IMPLEMENTATION_PLAN.md` Phase 5.2: inspect `pyproject.toml`, tests, and local test/coverage gates. Do not edit tests; report before any test change if a true incorrect test is found.
+
+### Actions Taken
+- Read the last 3 entries in `.claude/work-log.md`.
+- Began inspecting `IMPLEMENTATION_PLAN.md` Phase 5, `pyproject.toml`, tests, package layout, and local gates.
+- Confirmed Phase 5 is marked complete in `IMPLEMENTATION_PLAN.md`.
+
+### Decisions
+- Keep scope to `pyproject.toml`, coverage/test diagnostics, and required logging.
+
+### Issues / Blockers
+- Existing work-log had an active Phase 5 entry from another worker/main thread; this entry documents Worker B's narrower scope.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Inspect CI workflow and coverage configuration against the current package layout.
+- Run local test, coverage, and lint gates where feasible.
+
+### Plan Tracking
+- Working on `IMPLEMENTATION_PLAN.md` Phase 5.2.
+
+---
+
+[2026-05-01 21:36] - Complete Worker B Coverage Gate Review
+
+### Context
+Worker B scope for `IMPLEMENTATION_PLAN.md` Phase 5.2: verify coverage configuration and local test/coverage gates for the current `coffeegrindsize/` package layout.
+
+### Actions Taken
+- Inspected `IMPLEMENTATION_PLAN.md` Phase 5, `pyproject.toml`, `.github/workflows/ci.yml`, `tests/`, and package layout.
+- Verified `pyproject.toml` coverage settings:
+  - `source = ["coffeegrindsize"]`
+  - omits `coffeegrindsize/__main__.py` and `coffeegrindsize/ui/*`
+  - `fail_under = 60`
+- Ran `uv run --extra dev ruff check .`:
+  - Passed.
+- Ran `uv run --extra dev pytest -v --tb=short --cov=coffeegrindsize --cov-report=term-missing --cov-report=xml`:
+  - Passed: 43 tests.
+  - Coverage: 89.81% total, above required 60%.
+  - Removed generated untracked `coverage.xml` after the run.
+
+### Decisions
+- No `pyproject.toml` changes needed; coverage scope is sensible for Phase 5 because it measures extracted package modules and excludes GUI entry/runtime code.
+- Did not edit tests.
+- Did not edit or revert existing `.github/workflows/ci.yml` changes from other work.
+
+### Issues / Blockers
+- None for Worker B scope.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Main thread/Worker A can continue handling CI workflow ownership and any final Phase 5 reconciliation.
+
+### Plan Tracking
+- `IMPLEMENTATION_PLAN.md` Phase 5.2 was already marked complete; Worker B verified the coverage gate without additional plan changes.
+
+---
+
+[2026-05-01 21:43] - Complete Phase 5 Verification
+
+### Context
+Finish `IMPLEMENTATION_PLAN.md` Phase 5 only, per request. Run all tests, fix failures if any, commit and push, then stop before Phase 6.
+
+### Actions Taken
+- Used parallel subagents:
+  - Worker A was assigned `.github/workflows/ci.yml` review but timed out and was closed without final changes.
+  - Worker B verified `pyproject.toml` coverage settings and local gates.
+- Reconciled Phase 5 state:
+  - `.github/workflows/ci.yml` exists and runs ruff + pytest with coverage under Python 3.10, 3.11, and 3.12 on Ubuntu.
+  - `pyproject.toml` already has the Phase 5 coverage gate.
+- Ran local verification:
+  - `uv run --extra dev ruff check .` passed.
+  - `uv run --extra dev pytest -v --cov=coffeegrindsize --cov-report=term` passed: 43 tests, 89.81% coverage.
+  - `git diff --check` passed.
+
+### Decisions
+- No test changes were needed.
+- No Phase 6 work was started.
+- Kept Phase 5 plan status unchanged because `IMPLEMENTATION_PLAN.md` already marks Phase 5.1 and Phase 5.2 complete.
+
+### Issues / Blockers
+- Worker A timed out; main thread completed workflow verification instead.
+- Initial file discovery missed `.github/workflows/ci.yml` because hidden paths were not listed by the first search.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Commit and push Phase 5 verification changes.
+- Stop after push per request.
+
+### Plan Tracking
+- `IMPLEMENTATION_PLAN.md` Phase 5.1 and Phase 5.2 remain complete.

@@ -1054,7 +1054,7 @@ class coffeegrindsize_GUI:
             simple_dropdown_menu.grid(row=self.simple_options_row, column=1, columnspan=2, sticky=EW)
 
         #Link the tropdown menu to a method
-        data_var.trace('w', method)
+        data_var.trace_add('write', method)
 
         #Update the display row
         self.options_row += 1
@@ -1092,7 +1092,7 @@ class coffeegrindsize_GUI:
         if event_on_entry is not None:
             #Determine the function to be triggered
             function_trigger = getattr(self, event_on_entry)
-            data_var.trace("w", lambda name, index, mode, data_var=data_var: function_trigger())
+            data_var.trace_add("write", lambda name, index, mode, data_var=data_var: function_trigger())
 
         #Display the data entry box
         data_entry = Entry(self.frame_options, textvariable=data_var, width=width)

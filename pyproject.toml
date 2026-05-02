@@ -12,6 +12,7 @@ dependencies = [
     "matplotlib>=3.7",
     "Pillow>=9.5",
     "pandas>=2.0",
+    "sv-ttk",
 ]
 
 [project.optional-dependencies]

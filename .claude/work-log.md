@@ -813,3 +813,157 @@ Finalize Phase 5 request after tests passed. Stop before Phase 6.
 
 ### Plan Tracking
 - `IMPLEMENTATION_PLAN.md` Phase 5.1 and Phase 5.2 remain complete.
+
+---
+
+[2026-05-02 04:08] - Start Phase 6 UX Modernization
+
+### Context
+Implement `IMPLEMENTATION_PLAN.md` Phase 6 with parallel subagents, run all tests, fix failures, commit and push when green.
+
+### Actions Taken
+- Read the last 3 entries in `.claude/work-log.md`.
+- Confirmed Phase 5 was completed and pushed to `origin/master`.
+- Read `IMPLEMENTATION_PLAN.md` Phase 6 scope.
+- Spawned parallel workers:
+  - Dependency/startup worker for `sv_ttk` dependency and startup theme.
+  - Ttk conversion worker for safe widget modernization in `coffeegrindsize/ui/app.py`.
+
+### Decisions
+- Treat Phase 6 as the `sv_ttk` visual refresh described in `IMPLEMENTATION_PLAN.md`.
+- Keep analysis and I/O modules out of scope unless tests reveal a regression.
+
+### Issues / Blockers
+- `.claude/test-change-log.md` does not exist yet; create it if any test changes become necessary.
+
+### Status
+🔄 In Progress
+
+### Next Steps
+- Integrate worker changes.
+- Run ruff and the full pytest suite.
+- Fix any failures, update `IMPLEMENTATION_PLAN.md`, commit, push, and stop.
+
+### Plan Tracking
+- Working on `IMPLEMENTATION_PLAN.md` Phase 6.
+
+---
+
+[2026-05-02 04:11] - Complete Phase 6 Dependency Startup Slice
+
+### Context
+Implement the dependency/startup slice for `IMPLEMENTATION_PLAN.md` Phase 6 without reverting concurrent UI migration edits.
+
+### Actions Taken
+- Added `sv-ttk` as a runtime dependency in `pyproject.toml`.
+- Synced `uv.lock`; resolved `sv-ttk` 2.6.1.
+- Added `sv_ttk` import and `sv_ttk.set_theme("light")` at GUI startup in `coffeegrindsize/ui/app.py`.
+- Updated `IMPLEMENTATION_PLAN.md` Phase 6 checklist text to mark only the dependency/startup slice complete.
+- Ran targeted validation:
+  - `uv lock --check`
+  - `uv run python -c "import coffeegrindsize.ui.app as app; print(app.sv_ttk.__name__)"`
+  - `uv run ruff check coffeegrindsize/ui/app.py`
+  - `uv run python -m py_compile coffeegrindsize/ui/app.py`
+
+### Decisions
+- Kept changes minimal for this slice and did not perform broader test repair.
+- Preserved concurrent `ttk` widget migration edits in `coffeegrindsize/ui/app.py` and only normalized the shared import block for ruff.
+
+### Issues / Blockers
+- Initial `uv lock` failed inside sandbox due lack of access to `/Users/paulbaur/.cache/uv`; reran with approved escalation and succeeded.
+- No test changes were made; `.claude/test-change-log.md` was not needed.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Continue or review the separate `ttk` widget migration work for the remaining Phase 6 checklist item.
+
+### Plan Tracking
+- `IMPLEMENTATION_PLAN.md` Phase 6 dependency/startup checklist item marked complete.
+- `IMPLEMENTATION_PLAN.md` Phase 6 widget replacement checklist item remains open.
+
+---
+
+[2026-05-02 04:11] - Complete Phase 6 Ttk Widget Slice
+
+### Context
+Implement the widget conversion slice for `IMPLEMENTATION_PLAN.md` Phase 6, limited to `coffeegrindsize/ui/app.py` widget imports/constructors and related styling.
+
+### Actions Taken
+- Replaced straightforward classic tkinter widget constructors with `ttk` equivalents in `coffeegrindsize/ui/app.py`:
+  - `Frame`, `Label`, `Button`, `Checkbutton`, `Entry`, and `OptionMenu`
+- Kept `Canvas`, `Menu`, `Tk`, tkinter variables, and `filedialog` on classic tkinter.
+- Kept the canvas placeholder as a classic `TkLabel` because it relies on classic `bg` and pixel-sized label options.
+- Adapted classic-only options:
+  - Removed button `highlightbackground`.
+  - Replaced frame/label `bg` usage with ttk styles where needed.
+  - Replaced stats frame `padx`/`pady` with ttk `padding`.
+  - Updated `ttk.OptionMenu` constructors to pass the current default value explicitly.
+- Marked the `IMPLEMENTATION_PLAN.md` Phase 6 widget replacement checklist item complete.
+- Ran targeted validation:
+  - `uv run --extra dev ruff check coffeegrindsize/ui/app.py` passed.
+  - `uv run python -c "import coffeegrindsize.ui.app"` passed.
+  - Hidden Tk fixture smoke instantiating `coffeegrindsize_GUI` passed.
+
+### Decisions
+- Did not modify tests; `.claude/test-change-log.md` was not needed.
+- Did not change dependency or startup theme behavior beyond preserving concurrent dependency/startup worker changes.
+- Did not convert the canvas placeholder label to `ttk.Label` because preserving its existing canvas background and fixed-size behavior is safer.
+
+### Issues / Blockers
+- None.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Review the combined Phase 6 diff and run any broader test suite required by the main integration thread.
+
+### Plan Tracking
+- `IMPLEMENTATION_PLAN.md` Phase 6 widget replacement checklist item marked complete.
+
+---
+
+[2026-05-02 04:22] - Complete Phase 6 Integration
+
+### Context
+Integrate parallel Phase 6 worker changes, run all tests, fix failures, commit and push.
+
+### Actions Taken
+- Reviewed combined Phase 6 diff from both workers.
+- Ran `uv run --extra dev ruff check .` successfully.
+- Ran full `uv run --extra dev pytest -v --tb=short --cov=coffeegrindsize --cov-report=term`.
+- Reproduced a full-suite hang after many GUI fixture instantiations.
+- Fixed the hang in `coffeegrindsize/ui/app.py` by clearing existing root widgets when constructing `coffeegrindsize_GUI`.
+- Verified targeted hanging subsets:
+  - `uv run --extra dev pytest -v --tb=short tests/test_pure_functions.py tests/test_threshold.py`
+  - `uv run --extra dev pytest -v --tb=short tests/test_clustering.py tests/test_geometry.py tests/test_io.py tests/test_pure_functions.py tests/test_snapshot.py tests/test_statistics.py tests/test_threshold.py`
+- Final verification passed:
+  - `uv run --extra dev ruff check .`
+  - `uv run --extra dev pytest -v --tb=short --cov=coffeegrindsize --cov-report=term` — 43 passed, 89.81% coverage.
+  - `uv lock --check`
+  - `git diff --check`
+- Reran final verification after import-order cleanup:
+  - `uv run --extra dev ruff check .`
+  - `uv run --extra dev pytest -v --tb=short --cov=coffeegrindsize --cov-report=term` — 43 passed, 89.81% coverage.
+  - `git diff --check`
+
+### Decisions
+- Fixed the GUI lifecycle leak in implementation rather than changing tests.
+- Did not modify tests; `.claude/test-change-log.md` was not needed.
+- Kept Phase 6 scoped to the `sv_ttk` visual refresh and safe ttk widget conversion.
+
+### Issues / Blockers
+- Full-suite pytest initially hung at `tests/test_threshold.py` due accumulated GUI widgets/callbacks on the shared hidden `Tk` root.
+- The cleanup assumes one active `coffeegrindsize_GUI` per Tk root, matching app startup behavior.
+
+### Status
+✅ Completed
+
+### Next Steps
+- Commit and push Phase 6.
+- Stop per request.
+
+### Plan Tracking
+- `IMPLEMENTATION_PLAN.md` Phase 6 checklist items are marked complete.

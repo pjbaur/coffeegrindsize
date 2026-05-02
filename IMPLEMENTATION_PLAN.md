@@ -402,7 +402,10 @@ In `pyproject.toml`: `fail_under = 60`. Coverage scope is restricted to `coffeeg
 
 **Depends on:** Phases 2–3.
 
-**Recommendation:** Start with `sv_ttk` for an immediate visual refresh (1 day). Add to dependencies, `import sv_ttk; sv_ttk.set_theme("light")` at startup, replace `tkinter.*` widgets with `ttk.*` equivalents.
+**Recommendation:** Start with `sv_ttk` for an immediate visual refresh (1 day).
+
+- [x] Add `sv_ttk` to runtime dependencies and apply `sv_ttk.set_theme("light")` at startup.
+- [x] Replace `tkinter.*` widgets with `ttk.*` equivalents.
 
 Future option: web-based UI (Streamlit/Gradio) reusing extracted analysis modules.
 

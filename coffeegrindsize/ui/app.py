@@ -10,29 +10,27 @@ from tkinter import (
     LEFT,
     NORMAL,
     RIGHT,
-    SUNKEN,
     TOP,
-    Button,
     Canvas,
-    Checkbutton,
     E,
-    Entry,
-    Frame,
     IntVar,
-    Label,
     Menu,
     N,
-    OptionMenu,
     StringVar,
     Tk,
     W,
     X,
     Y,
     filedialog,
+    ttk,
+)
+from tkinter import (
+    Label as TkLabel,
 )
 
 import matplotlib
 import numpy as np
+import sv_ttk
 from PIL import Image, ImageTk
 
 matplotlib.use('TkAgg')
@@ -74,6 +72,14 @@ from coffeegrindsize.utils import lighter
 
 #Set thick axes
 rc("axes", linewidth=2)
+
+
+def _clear_root_for_gui(root):
+    # Tests reuse one hidden root; clear previous GUI widgets before rebuilding it.
+    root.config(menu="")
+    for child in root.winfo_children():
+        child.destroy()
+
 
 #Python class for the user interface window
 class coffeegrindsize_GUI:
@@ -136,6 +142,7 @@ class coffeegrindsize_GUI:
 
         #Remember the root object for the full user interface so that the methods of coffeegrindsize_GUI can refer to it
         self.master = root
+        _clear_root_for_gui(self.master)
 
         #The first row where options or buttons will be displayed
         self.options_row = 1
@@ -178,31 +185,34 @@ class coffeegrindsize_GUI:
 
         #Create a toolbar with buttons to launch various steps of analysis
         toolbar_bg = "gray90"
-        toolbar = Frame(self.master, bg=toolbar_bg)
+        style = ttk.Style(self.master)
+        style.configure("Toolbar.TFrame", background=toolbar_bg)
+        style.configure("Status.TLabel", background="grey")
+        toolbar = ttk.Frame(self.master, style="Toolbar.TFrame")
         toolbar.pack(side=TOP, fill=X)
 
         #Create a second toolbar
-        toolbar2 = Frame(self.master, bg=toolbar_bg)
+        toolbar2 = ttk.Frame(self.master, style="Toolbar.TFrame")
         toolbar2.pack(side=TOP, fill=X)
 
         #Create a status bar at the bottom of the window
         self.status_var = StringVar()
         self.status_var.set("Idle...")
-        status = Label(self.master, textvariable=self.status_var, anchor=W, bg="grey", relief=SUNKEN)
+        status = ttk.Label(self.master, textvariable=self.status_var, anchor=W, style="Status.TLabel")
         status.pack(side=BOTTOM, fill=X)
 
         # === Initialize the main frame that will contain option buttons and settings and the image ===
-        self.container_options = Frame(root, width=720)
+        self.container_options = ttk.Frame(root, width=720)
         self.container_options.pack(side="left", fill=Y)#, expand=True)
         #self.container_options.grid_rowconfigure(0, weight=1)
         #self.container_options.grid_columnconfigure(0, weight=1)
 
         options_width = 500
-        self.frame_options = Frame(self.container_options, width=options_width)
+        self.frame_options = ttk.Frame(self.container_options, width=options_width)
         self.frame_options.grid(row=0, column=0, sticky="nsew", columnspan=1, rowspan=25)
 
         # === Create another version of that frame that excludes advanced options
-        self.simple_frame_options = Frame(self.container_options, width=options_width)
+        self.simple_frame_options = ttk.Frame(self.container_options, width=options_width)
         self.simple_frame_options.grid(row=0, column=0, sticky="nsew", columnspan=1, rowspan=25)
 
         # === Build the adjustable keyword options ===
@@ -277,7 +287,7 @@ class coffeegrindsize_GUI:
         #Whether the Particle Detection step should be quick and approximate
         self.quick_var = IntVar()
         self.quick_var.set(0)
-        quick_checkbox = Checkbutton(self.frame_options, text="Quick & Approximate", variable=self.quick_var)
+        quick_checkbox = ttk.Checkbutton(self.frame_options, text="Quick & Approximate", variable=self.quick_var)
         quick_checkbox.grid(row=self.options_row, columnspan=2, sticky=E)
 
         self.options_row += 1
@@ -312,7 +322,7 @@ class coffeegrindsize_GUI:
         #This is a checkbox
         self.xaxis_auto_var = IntVar()
         self.xaxis_auto_var.set(1)
-        xaxis_auto_checkbox = Checkbutton(self.frame_options, text="Automated X axis | ", variable=self.xaxis_auto_var, command=self.xaxis_auto_event)
+        xaxis_auto_checkbox = ttk.Checkbutton(self.frame_options, text="Automated X axis | ", variable=self.xaxis_auto_var, command=self.xaxis_auto_event)
         xaxis_auto_checkbox.grid(row=self.options_row, columnspan=1, sticky=E, column=0)
 
         #X axis range for the histogram figure
@@ -322,7 +332,7 @@ class coffeegrindsize_GUI:
         #This is a checkbox
         self.xlog_var = IntVar()
         self.xlog_var.set(1)
-        xlog_checkbox = Checkbutton(self.frame_options, text="Log X axis | ", variable=self.xlog_var, command=self.xlog_event)
+        xlog_checkbox = ttk.Checkbutton(self.frame_options, text="Log X axis | ", variable=self.xlog_var, command=self.xlog_event)
         xlog_checkbox.grid(row=self.options_row, columnspan=1, sticky=E, column=0)
 
         self.xmax_var, self.xmax_var_id = self.label_entry(def_max_x_axis, "Max. X Axis:", "", entry_id=True, addcol=1, event_on_enter="create_histogram", advanced=True, clear_on_click=True)
@@ -337,7 +347,7 @@ class coffeegrindsize_GUI:
         #This is a checkbox
         self.nbins_auto_var = IntVar()
         self.nbins_auto_var.set(1)
-        nbins_auto_checkbox = Checkbutton(self.frame_options, text="Automated bins | ", variable=self.nbins_auto_var, command=self.nbins_auto_event)
+        nbins_auto_checkbox = ttk.Checkbutton(self.frame_options, text="Automated bins | ", variable=self.nbins_auto_var, command=self.nbins_auto_event)
         nbins_auto_checkbox.grid(row=self.options_row, columnspan=1, column=0, sticky=E)
 
         #self.options_row += 1
@@ -354,7 +364,7 @@ class coffeegrindsize_GUI:
         self.label_title("Output Options:", advanced=True)
 
         #Button to select an output directory
-        output_dir_button = Button(self.frame_options, text="Select Output Directory:", command=self.select_output_dir)
+        output_dir_button = ttk.Button(self.frame_options, text="Select Output Directory:", command=self.select_output_dir)
         output_dir_button.grid(row=self.options_row, sticky=E)
 
         #Display current output dir
@@ -382,34 +392,34 @@ class coffeegrindsize_GUI:
         self.label_separator(simpleonly=True)
 
         #Button to zoom in
-        #self.zoom_in_button = Button(self.frame_options, text="Zoom In", command=self.zoom_in_button)
+        #self.zoom_in_button = ttk.Button(self.frame_options, text="Zoom In", command=self.zoom_in_button)
         #self.zoom_in_button.grid(row=self.options_row, column=0, columnspan=1, sticky=E)
 
-        #self.zoom_out_button = Button(self.frame_options, text="Zoom Out", command=self.zoom_out_button)
+        #self.zoom_out_button = ttk.Button(self.frame_options, text="Zoom Out", command=self.zoom_out_button)
         #self.zoom_out_button.grid(row=self.options_row, column=1, columnspan=1, sticky=W)
 
         #Button for resetting zoom in the displayed image
-        self.reset_zoom_button = Button(self.frame_options, text="Reset View", command=self.reset_zoom)
+        self.reset_zoom_button = ttk.Button(self.frame_options, text="Reset View", command=self.reset_zoom)
         self.reset_zoom_button.grid(row=self.options_row, column=2, columnspan=1, sticky=W)
         self.options_row += 1
 
         #Simplified versions of zoom buttons
-        self.simple_zoom_in_button = Button(self.simple_frame_options, text="Zoom In", command=self.zoom_in_button)
+        self.simple_zoom_in_button = ttk.Button(self.simple_frame_options, text="Zoom In", command=self.zoom_in_button)
         self.simple_zoom_in_button.grid(row=self.simple_options_row, column=0, columnspan=1, sticky=E)
 
-        self.simple_zoom_out_button = Button(self.simple_frame_options, text="Zoom Out", command=self.zoom_out_button)
+        self.simple_zoom_out_button = ttk.Button(self.simple_frame_options, text="Zoom Out", command=self.zoom_out_button)
         self.simple_zoom_out_button.grid(row=self.simple_options_row, column=1, columnspan=1, sticky=W)
 
-        self.simple_reset_zoom_button = Button(self.simple_frame_options, text="Reset View", command=self.reset_zoom)
+        self.simple_reset_zoom_button = ttk.Button(self.simple_frame_options, text="Reset View", command=self.reset_zoom)
         self.simple_reset_zoom_button.grid(row=self.simple_options_row, column=2, columnspan=1, sticky=W)
         self.simple_options_row += 1
 
         #Button for resetting all options to default
-        reset_params_button = Button(self.frame_options, text="Reset All Parameters", command=self.reset_status)
+        reset_params_button = ttk.Button(self.frame_options, text="Reset All Parameters", command=self.reset_status)
         reset_params_button.grid(row=self.options_row, column=1, columnspan=2, sticky=E)
 
         #Simplified version of button
-        simple_reset_params_button = Button(self.simple_frame_options, text="Reset All Parameters", command=self.reset_status)
+        simple_reset_params_button = ttk.Button(self.simple_frame_options, text="Reset All Parameters", command=self.reset_status)
         simple_reset_params_button.grid(row=self.simple_options_row, column=1, columnspan=2, sticky=E)
 
         #If expert mode is already set then display it
@@ -419,10 +429,12 @@ class coffeegrindsize_GUI:
         # === Create a frame to display some stats ===
 
         frame_stats_bg = "gray60"
-        self.frame_stats = Frame(self.container_options, bg=frame_stats_bg, padx=2, pady=10)
+        style.configure("Stats.TFrame", background=frame_stats_bg)
+        style.configure("Stats.TLabel", background=frame_stats_bg)
+        self.frame_stats = ttk.Frame(self.container_options, style="Stats.TFrame", padding=(2, 10))
         self.frame_stats.grid(row=0, column=1, sticky="new", rowspan=1)
 
-        title_label = Label(self.frame_stats, text="Properties of the Particle Distribution:", font='Helvetica 16 bold', bg=frame_stats_bg)
+        title_label = ttk.Label(self.frame_stats, text="Properties of the Particle Distribution:", font='Helvetica 16 bold', style="Stats.TLabel")
         title_label.grid(row=0, sticky=W, padx=self.title_padx, columnspan=12)
 
         stats_colsep_width = 3
@@ -432,106 +444,106 @@ class coffeegrindsize_GUI:
         stats_entry_width = 5
         self.diam_average_var = StringVar()
         self.diam_average_var.set("None")
-        diam_average_label = Label(self.frame_stats, text="Average Diameter:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        diam_average_label = ttk.Label(self.frame_stats, text="Average Diameter:", style="Stats.TLabel", font='Helvetica 14 bold')
         diam_average_label.grid(row=stats_row, sticky=E, column=stats_column)
-        diam_average_entry = Label(self.frame_stats, textvariable=self.diam_average_var, width=stats_entry_width, bg=frame_stats_bg)
+        diam_average_entry = ttk.Label(self.frame_stats, textvariable=self.diam_average_var, width=stats_entry_width, style="Stats.TLabel")
         diam_average_entry.grid(row=stats_row, column=stats_column+1)
-        unit_label = Label(self.frame_stats, text="(mm)", bg=frame_stats_bg)
+        unit_label = ttk.Label(self.frame_stats, text="(mm)", style="Stats.TLabel")
         unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         stats_row += 1
 
         self.diam_stddev_var = StringVar()
         self.diam_stddev_var.set("None")
-        diam_stddev_label = Label(self.frame_stats, text="Scatter in Diameter:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        diam_stddev_label = ttk.Label(self.frame_stats, text="Scatter in Diameter:", style="Stats.TLabel", font='Helvetica 14 bold')
         diam_stddev_label.grid(row=stats_row, sticky=E, column=stats_column)
-        diam_stddev_entry = Label(self.frame_stats, textvariable=self.diam_stddev_var, width=stats_entry_width, bg=frame_stats_bg)
+        diam_stddev_entry = ttk.Label(self.frame_stats, textvariable=self.diam_stddev_var, width=stats_entry_width, style="Stats.TLabel")
         diam_stddev_entry.grid(row=stats_row, column=stats_column+1)
-        unit_label = Label(self.frame_stats, text="(mm)", bg=frame_stats_bg)
+        unit_label = ttk.Label(self.frame_stats, text="(mm)", style="Stats.TLabel")
         unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         stats_column += 3
         stats_row =1
 
-        separator_label = Label(self.frame_stats, text="", width=stats_colsep_width, bg=frame_stats_bg)
+        separator_label = ttk.Label(self.frame_stats, text="", width=stats_colsep_width, style="Stats.TLabel")
         separator_label.grid(row=stats_row, column=stats_column)
 
         stats_column += 1
 
         self.surf_average_var = StringVar()
         self.surf_average_var.set("None")
-        surf_average_label = Label(self.frame_stats, text="Average Surface:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        surf_average_label = ttk.Label(self.frame_stats, text="Average Surface:", style="Stats.TLabel", font='Helvetica 14 bold')
         surf_average_label.grid(row=stats_row, sticky=E, column=stats_column)
-        surf_average_entry = Label(self.frame_stats, textvariable=self.surf_average_var, width=stats_entry_width, bg=frame_stats_bg)
+        surf_average_entry = ttk.Label(self.frame_stats, textvariable=self.surf_average_var, width=stats_entry_width, style="Stats.TLabel")
         surf_average_entry.grid(row=stats_row, column=stats_column+1)
-        unit_label = Label(self.frame_stats, text="(mm²)", bg=frame_stats_bg)
+        unit_label = ttk.Label(self.frame_stats, text="(mm²)", style="Stats.TLabel")
         unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         stats_row += 1
 
         self.surf_stddev_var = StringVar()
         self.surf_stddev_var.set("None")
-        surf_stddev_label = Label(self.frame_stats, text="Scatter in Surface:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        surf_stddev_label = ttk.Label(self.frame_stats, text="Scatter in Surface:", style="Stats.TLabel", font='Helvetica 14 bold')
         surf_stddev_label.grid(row=stats_row, sticky=E, column=stats_column)
-        surf_stddev_entry = Label(self.frame_stats, textvariable=self.surf_stddev_var, width=stats_entry_width, bg=frame_stats_bg)
+        surf_stddev_entry = ttk.Label(self.frame_stats, textvariable=self.surf_stddev_var, width=stats_entry_width, style="Stats.TLabel")
         surf_stddev_entry.grid(row=stats_row, column=stats_column+1)
-        unit_label = Label(self.frame_stats, text="(mm²)", bg=frame_stats_bg)
+        unit_label = ttk.Label(self.frame_stats, text="(mm²)", style="Stats.TLabel")
         unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         # stats_column += 3
         # stats_row =1
 
-        # separator_label = Label(self.frame_stats, text="", width=stats_colsep_width, bg=frame_stats_bg)
+        # separator_label = ttk.Label(self.frame_stats, text="", width=stats_colsep_width, style="Stats.TLabel")
         # separator_label.grid(row=stats_row, column=stats_column)
 
         # stats_column += 1
 
         # self.ey_average_var = StringVar()
         # self.ey_average_var.set("None")
-        # ey_average_label = Label(self.frame_stats, text="Average EY:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        # ey_average_label = ttk.Label(self.frame_stats, text="Average EY:", style="Stats.TLabel", font='Helvetica 14 bold')
         # ey_average_label.grid(row=stats_row, sticky=E, column=stats_column)
-        # ey_average_entry = Label(self.frame_stats, textvariable=self.ey_average_var, width=stats_entry_width, bg=frame_stats_bg)
+        # ey_average_entry = ttk.Label(self.frame_stats, textvariable=self.ey_average_var, width=stats_entry_width, style="Stats.TLabel")
         # ey_average_entry.grid(row=stats_row, column=stats_column+1)
-        # unit_label = Label(self.frame_stats, text="(%)", bg=frame_stats_bg)
+        # unit_label = ttk.Label(self.frame_stats, text="(%)", style="Stats.TLabel")
         # unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         # stats_row += 1
 
         # self.ey_stddev_var = StringVar()
         # self.ey_stddev_var.set("None")
-        # ey_stddev_label = Label(self.frame_stats, text="Scatter in EY:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        # ey_stddev_label = ttk.Label(self.frame_stats, text="Scatter in EY:", style="Stats.TLabel", font='Helvetica 14 bold')
         # ey_stddev_label.grid(row=stats_row, sticky=E, column=stats_column)
-        # ey_stddev_entry = Label(self.frame_stats, textvariable=self.ey_stddev_var, width=stats_entry_width, bg=frame_stats_bg)
+        # ey_stddev_entry = ttk.Label(self.frame_stats, textvariable=self.ey_stddev_var, width=stats_entry_width, style="Stats.TLabel")
         # ey_stddev_entry.grid(row=stats_row, column=stats_column+1)
-        # unit_label = Label(self.frame_stats, text="(%)", bg=frame_stats_bg)
+        # unit_label = ttk.Label(self.frame_stats, text="(%)", style="Stats.TLabel")
         # unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         stats_column += 3
         stats_row = 1
 
-        separator_label = Label(self.frame_stats, text="", width=stats_colsep_width, bg=frame_stats_bg)
+        separator_label = ttk.Label(self.frame_stats, text="", width=stats_colsep_width, style="Stats.TLabel")
         separator_label.grid(row=stats_row, column=stats_column)
 
         stats_column += 1
 
         self.eff_var = StringVar()
         self.eff_var.set("None")
-        eff_label = Label(self.frame_stats, text="Efficiency:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        eff_label = ttk.Label(self.frame_stats, text="Efficiency:", style="Stats.TLabel", font='Helvetica 14 bold')
         eff_label.grid(row=stats_row, sticky=E, column=stats_column)
-        eff_entry = Label(self.frame_stats, textvariable=self.eff_var, width=stats_entry_width, bg=frame_stats_bg)
+        eff_entry = ttk.Label(self.frame_stats, textvariable=self.eff_var, width=stats_entry_width, style="Stats.TLabel")
         eff_entry.grid(row=stats_row, column=stats_column+1)
-        unit_label = Label(self.frame_stats, text="(%)", bg=frame_stats_bg)
+        unit_label = ttk.Label(self.frame_stats, text="(%)", style="Stats.TLabel")
         unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         stats_row += 1
 
         self.q_var = StringVar()
         self.q_var.set("None")
-        eff_label = Label(self.frame_stats, text="Quality:", bg=frame_stats_bg, font='Helvetica 14 bold')
+        eff_label = ttk.Label(self.frame_stats, text="Quality:", style="Stats.TLabel", font='Helvetica 14 bold')
         eff_label.grid(row=stats_row, sticky=E, column=stats_column)
-        eff_entry = Label(self.frame_stats, textvariable=self.q_var, width=stats_entry_width, bg=frame_stats_bg)
+        eff_entry = ttk.Label(self.frame_stats, textvariable=self.q_var, width=stats_entry_width, style="Stats.TLabel")
         eff_entry.grid(row=stats_row, column=stats_column+1)
-        unit_label = Label(self.frame_stats, text="", bg=frame_stats_bg)
+        unit_label = ttk.Label(self.frame_stats, text="", style="Stats.TLabel")
         unit_label.grid(row=stats_row, column=stats_column+2, sticky=W)
 
         # === Create a canvas to display images and figures ===
@@ -548,78 +560,78 @@ class coffeegrindsize_GUI:
         self.image_canvas.focus_set()
 
         #Display a label when no image was loaded
-        self.noimage_label = Label(self.image_canvas, text="No Image Loaded", anchor=CENTER, bg=image_canvas_bg, font='Helvetica 22 bold', width=self.canvas_width, height=self.canvas_height)
+        self.noimage_label = TkLabel(self.image_canvas, text="No Image Loaded", anchor=CENTER, bg=image_canvas_bg, font='Helvetica 22 bold', width=self.canvas_width, height=self.canvas_height)
         self.noimage_label.pack(side=LEFT)
 
         # === Populate the toolbar with buttons for analysis ===
 
         #Button to open an image of the coffee grounds picture
-        open_image_button = Button(toolbar, text="Open Image", command=lambda: self.open_image(None), highlightbackground=toolbar_bg)
+        open_image_button = ttk.Button(toolbar, text="Open Image", command=lambda: self.open_image(None))
         open_image_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to select a reference object
-        ref_obj_button = Button(toolbar, text="Select Reference Object", command=lambda: self.select_reference_object_mouse(None), highlightbackground=toolbar_bg)
+        ref_obj_button = ttk.Button(toolbar, text="Select Reference Object", command=lambda: self.select_reference_object_mouse(None))
         ref_obj_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to select region containing the coffee grounds
-        region_button = Button(toolbar, text="Select Analysis Region", command=lambda: self.select_region(None), highlightbackground=toolbar_bg)
+        region_button = ttk.Button(toolbar, text="Select Analysis Region", command=lambda: self.select_region(None))
         region_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to apply image threshold
-        threshold_image_button = Button(toolbar, text="Threshold Image", command=lambda: self.threshold_image(None), highlightbackground=toolbar_bg)
+        threshold_image_button = ttk.Button(toolbar, text="Threshold Image", command=lambda: self.threshold_image(None))
         threshold_image_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to launch the particle detection analysis
-        psd_button = Button(toolbar, text="Launch Particle Detection", command=lambda: self.launch_psd(None),highlightbackground=toolbar_bg)
+        psd_button = ttk.Button(toolbar, text="Launch Particle Detection", command=lambda: self.launch_psd(None))
         psd_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to erase some clusters
-        erase_button = Button(toolbar, text="Erase Clusters", command=lambda: self.erase_clusters(None), highlightbackground=toolbar_bg)
+        erase_button = ttk.Button(toolbar, text="Erase Clusters", command=lambda: self.erase_clusters(None))
         erase_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to display histogram figures
-        histogram_button = Button(toolbar, text="Create Histogram", command=lambda: self.create_histogram(None), highlightbackground=toolbar_bg)
+        histogram_button = ttk.Button(toolbar, text="Create Histogram", command=lambda: self.create_histogram(None))
         histogram_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Read Blog Button
         #Button to open blog
-        blog_button = Button(toolbar, text="Read Coffee Ad Astra Blog", command=self.blog_goto, highlightbackground=toolbar_bg)
+        blog_button = ttk.Button(toolbar, text="Read Coffee Ad Astra Blog", command=self.blog_goto)
         blog_button.pack(side=RIGHT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Downsample button
-        downsample_button = Button(toolbar2, text="Reduce Image Quality", command=self.downsample_image, highlightbackground=toolbar_bg)
+        downsample_button = ttk.Button(toolbar2, text="Reduce Image Quality", command=self.downsample_image)
         downsample_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to load data from disk
-        load_data_button = Button(toolbar2, text="Load Data", command=lambda: self.load_data(None), highlightbackground=toolbar_bg)
+        load_data_button = ttk.Button(toolbar2, text="Load Data", command=lambda: self.load_data(None))
         load_data_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to load comparison data from disk
-        load_comparison_data_button = Button(toolbar2, text="Load Comparison Data", command=lambda: self.load_comparison_data(None), highlightbackground=toolbar_bg)
+        load_comparison_data_button = ttk.Button(toolbar2, text="Load Comparison Data", command=lambda: self.load_comparison_data(None))
         load_comparison_data_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to flush comparison data
-        flush_comparison_data_button = Button(toolbar2, text="Flush Comparison Data", command=self.flush_comparison_data, highlightbackground=toolbar_bg)
+        flush_comparison_data_button = ttk.Button(toolbar2, text="Flush Comparison Data", command=self.flush_comparison_data)
         flush_comparison_data_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to output data to the disk
-        save_button = Button(toolbar2, text="Save Data", command=lambda: self.save_data(None), highlightbackground=toolbar_bg)
+        save_button = ttk.Button(toolbar2, text="Save Data", command=lambda: self.save_data(None))
         save_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Button to save histogram to disk
-        savehist_button = Button(toolbar2, text="Save View", command=lambda: self.save_histogram(None), highlightbackground=toolbar_bg)
+        savehist_button = ttk.Button(toolbar2, text="Save View", command=lambda: self.save_histogram(None))
         savehist_button.pack(side=LEFT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Quit button
-        quit_button = Button(toolbar2, text="Quit", command=self.quit_gui, highlightbackground=toolbar_bg)
+        quit_button = ttk.Button(toolbar2, text="Quit", command=self.quit_gui)
         quit_button.pack(side=RIGHT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Reset button
-        reset_button = Button(toolbar2, text="Reboot", command=self.reset_gui, highlightbackground=toolbar_bg)
+        reset_button = ttk.Button(toolbar2, text="Reboot", command=self.reset_gui)
         reset_button.pack(side=RIGHT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         #Help button
-        help_button = Button(toolbar2, text="Help", command=self.launch_help, highlightbackground=toolbar_bg)
+        help_button = ttk.Button(toolbar2, text="Help", command=self.launch_help)
         help_button.pack(side=RIGHT, padx=self.toolbar_padx, pady=self.toolbar_pady)
 
         # === Create a menu bar (File, Edit...) ===
@@ -1036,21 +1048,21 @@ class coffeegrindsize_GUI:
         data_var.set(choices[default_choice_index])
 
         #Create a label for the dropdown menu
-        dropdown_label = Label(self.frame_options, text=label)
+        dropdown_label = ttk.Label(self.frame_options, text=label)
         dropdown_label.grid(row=self.options_row, sticky=E)
 
         #Also create simple version if needed
         if advanced is False:
-            simple_dropdown_label = Label(self.simple_frame_options, text=label)
+            simple_dropdown_label = ttk.Label(self.simple_frame_options, text=label)
             simple_dropdown_label.grid(row=self.simple_options_row, sticky=E)
 
         #Create the dropdown menu itself
-        dropdown_menu = OptionMenu(self.frame_options, data_var, *choices)
+        dropdown_menu = ttk.OptionMenu(self.frame_options, data_var, data_var.get(), *choices)
         dropdown_menu.grid(row=self.options_row, column=1, columnspan=2, sticky=EW)
 
         #Also create simple version if needed
         if advanced is False:
-            simple_dropdown_menu = OptionMenu(self.simple_frame_options, data_var, *choices)
+            simple_dropdown_menu = ttk.OptionMenu(self.simple_frame_options, data_var, data_var.get(), *choices)
             simple_dropdown_menu.grid(row=self.simple_options_row, column=1, columnspan=2, sticky=EW)
 
         #Link the tropdown menu to a method
@@ -1081,11 +1093,11 @@ class coffeegrindsize_GUI:
 
         #Display the label for the name of the option
         if text != "":
-            data_label = Label(self.frame_options, text=text)
+            data_label = ttk.Label(self.frame_options, text=text)
             data_label.grid(row=self.options_row, sticky=E, column=addcol)
             #Also display simplified version if required
             if advanced is False:
-                simple_data_label = Label(self.simple_frame_options, text=text)
+                simple_data_label = ttk.Label(self.simple_frame_options, text=text)
                 simple_data_label.grid(row=self.simple_options_row, sticky=E, column=addcol)
 
         #Link data entry to an event if this is required
@@ -1095,7 +1107,7 @@ class coffeegrindsize_GUI:
             data_var.trace_add("write", lambda name, index, mode, data_var=data_var: function_trigger())
 
         #Display the data entry box
-        data_entry = Entry(self.frame_options, textvariable=data_var, width=width)
+        data_entry = ttk.Entry(self.frame_options, textvariable=data_var, width=width)
         data_entry.grid(row=self.options_row, column=1+addcol, columnspan=columnspan)
 
         #Bind Entry with clearing of data
@@ -1104,7 +1116,7 @@ class coffeegrindsize_GUI:
 
         #Also display simplified version if required
         if advanced is False:
-            simple_data_entry = Entry(self.simple_frame_options, textvariable=data_var, width=width)
+            simple_data_entry = ttk.Entry(self.simple_frame_options, textvariable=data_var, width=width)
             simple_data_entry.grid(row=self.simple_options_row, column=1+addcol, columnspan=columnspan)
             #Bind Entry with clearing of data
             if clear_on_click is True:
@@ -1119,11 +1131,11 @@ class coffeegrindsize_GUI:
 
         #Display the physical units of this option
         if units_text != "":
-            data_label_units = Label(self.frame_options, text=units_text)
+            data_label_units = ttk.Label(self.frame_options, text=units_text)
             data_label_units.grid(row=self.options_row, column=2+addcol, sticky=W)
             #Also display simplified version if required
             if advanced is False:
-                simple_data_label_units = Label(self.simple_frame_options, text=units_text)
+                simple_data_label_units = ttk.Label(self.simple_frame_options, text=units_text)
                 simple_data_label_units.grid(row=self.simple_options_row, column=2+addcol, sticky=W)
 
         #Update the row where next labels and entries will be displayed
@@ -1152,12 +1164,12 @@ class coffeegrindsize_GUI:
 
         #Add label to the simplified frame if this is not an advanced option
         if advanced is False:
-            title_label = Label(self.simple_frame_options, text=text, font='Helvetica 16 bold')
+            title_label = ttk.Label(self.simple_frame_options, text=text, font='Helvetica 16 bold')
             title_label.grid(row=self.simple_options_row, sticky=W, padx=self.title_padx, columnspan=2)
             self.simple_options_row += 1
 
         #Add label to the advanced frame
-        title_label = Label(self.frame_options, text=text, font='Helvetica 16 bold')
+        title_label = ttk.Label(self.frame_options, text=text, font='Helvetica 16 bold')
         title_label.grid(row=self.options_row, sticky=W, padx=self.title_padx, columnspan=2)
         self.options_row += 1
 
@@ -1167,11 +1179,11 @@ class coffeegrindsize_GUI:
     #Method to display a vertical blank separator in the options frame
     def label_separator(self, advanced=False, simpleonly=False):
         if simpleonly is False:
-            separator_label = Label(self.frame_options, text="")
+            separator_label = ttk.Label(self.frame_options, text="")
             separator_label.grid(row=self.options_row)
             self.options_row += 1
         if advanced is False:
-            simple_separator_label = Label(self.simple_frame_options, text="")
+            simple_separator_label = ttk.Label(self.simple_frame_options, text="")
             simple_separator_label.grid(row=self.simple_options_row)
             self.simple_options_row += 1
 
@@ -2952,6 +2964,7 @@ class coffeegrindsize_GUI:
 def main():
     #Invoke tkinter package
     root = Tk()
+    sv_ttk.set_theme("light")
     root.protocol('WM_DELETE_WINDOW', root.quit)
 
     #Call the user interface
